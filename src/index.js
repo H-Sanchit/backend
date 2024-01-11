@@ -1,6 +1,18 @@
 import connectDB from "./db/index.js";
+import app from "./app.js";
 
-connectDB();
+connectDB()
+  .then(() => {
+    app.listen(process.env.PORT || 8000, () => {
+      console.log(`App is listening through port: ${process.env.PORT}`);
+    });
+    app.on("error", (error) => {
+      console.log("Error on listening", error);
+    });
+  })
+  .catch((error) => {
+    console.log("!!!! connect DB ERROR !!!!", error);
+  });
 
 // (async () => {
 //   try {
