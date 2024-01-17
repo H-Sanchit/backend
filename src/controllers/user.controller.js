@@ -6,7 +6,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 
 const registerUser = asyncHandler(async (req, res) => {
   //get data from user/frontend
-  const { username, email, fullName } = req.body;
+  const { username, email, fullName, password } = req.body;
 
   //if the given fields are empty throw an error
   if ([username, email, fullName].some((field) => field?.trim() === "")) {
@@ -22,11 +22,11 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   //check for images if they are uploaded
-  const avatarLocalPath = req.field?.avatar[0]?.path;
-  const coverImageLocalPath = req.field?.coverImage[0]?.path;
+  const avatarLocalPath = req.files?.avatar[0]?.path;
+  const coverImageLocalPath = req.files?.coverImage[0]?.path;
 
   if (!avatarLocalPath) {
-    throw new ApiError(400, "Avatar is Required.");
+    throw new ApiError(400, "Avatar is needed.");
   }
 
   //uploading Avatar & Coverimage to cloudinary.
@@ -38,7 +38,7 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   //creating a user
-  const user = User.create({
+  const user = await User.create({
     fullName,
     email,
     avatar: avatar.url,
@@ -48,7 +48,7 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   //checking if user was created in database or we got empty
-  const createdUser = await User.findById(_id).select(
+  const createdUser = await User.findById(user._id).select(
     "-password -refreshToken"
   );
 
