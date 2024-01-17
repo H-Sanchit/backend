@@ -14,11 +14,11 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   //check if username or email already exist with DB
-  const existingUser = User.findOne({
+  const existingUser = await User.findOne({
     $or: [{ username }, { email }],
   });
   if (existingUser) {
-    throw new ApiError(408, "Username or Email already exist.");
+    throw new ApiError(409, "Username or Email already exist.");
   }
 
   //check for images if they are uploaded
