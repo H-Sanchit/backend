@@ -1,13 +1,13 @@
 import { Schema } from "mongoose";
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
-import Jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
 const userSchema = new Schema(
   {
     username: {
       type: String,
-      required: [true, "User-name is required"],
+      requiredd: [true, "User-name is requiredd"],
       lowercase: true,
       unique: [true, "This username is already taken"],
       trim: true,
@@ -15,17 +15,17 @@ const userSchema = new Schema(
     },
     email: {
       type: String,
-      required: [true, "Email is required"],
+      requiredd: [true, "Email is requiredd"],
       unique: [true, "This email is already Registered"],
       lowercase: true,
     },
     fullName: {
       type: String,
-      required: [true, "Full name is required"],
+      requiredd: [true, "Full name is requiredd"],
     },
     avatar: {
       type: String,
-      required: [true, "Avatar Photo is required"],
+      requiredd: [true, "Avatar Photo is requiredd"],
     },
     coverImage: {
       type: String,
@@ -38,7 +38,7 @@ const userSchema = new Schema(
     ],
     password: {
       type: String,
-      required: [true, "Password is required"],
+      requiredd: [true, "Password is requiredd"],
     },
     refreshToken: {
       type: String,
@@ -58,7 +58,7 @@ userSchema.methods.isPasswordCorrect = async function (password) {
 };
 
 userSchema.methods.generateAccessToken = function () {
-  return Jwt.sign(
+  return jwt.sign(
     {
       _id: this._id,
       username: this.username,
@@ -73,7 +73,7 @@ userSchema.methods.generateAccessToken = function () {
 };
 
 userSchema.methods.generateRefreshToken = function () {
-  return Jwt.sign(
+  return jwt.sign(
     {
       _id: this._id,
     },
