@@ -301,7 +301,9 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
   }
   const channel = await User.aggregate([
     {
-      $match: { username: username?.toLowerCase() },
+      $match: {
+        username: username?.toLowerCase(),
+      },
     },
     {
       $lookup: {
@@ -324,21 +326,15 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
         subscriberCount: {
           $size: "$subscribers",
         },
-      },
-    },
-    {
-      $addFields: {
         channelSubscribedToCount: {
           $size: "$subscribedTo",
         },
-      },
-    },
-    {
-      isSubscribedTo: {
-        $cond: {
-          if: { $in: [req.user?._id, "$subscribers.subscriber"] },
-          then: true,
-          else: false,
+        isSubscribedTo: {
+          $cond: {
+            if: { $in: [req.user?._id, "$subscribers.subscriber"] },
+            then: true,
+            else: false,
+          },
         },
       },
     },
@@ -351,24 +347,28 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
         subscriberCount: 1,
         channelSubscribedToCount: 1,
         email: 1,
+        isSubscribedTo: 1,
       },
     },
   ]);
 
+  console.log(channel);
   if (!channel?.length) {
-    throw new ApiError(404, "channel doesn't exist");
+    throw new ApiError(404, "channel does not exist");
   }
 
   return res
     .status(200)
-    .json(200, channel[0], "User channel fetched successfully");
+    .json(
+      new ApiResponse(200, channel[0], "User channel fetched successfully")
+    );
 });
 
 const getWatchHistory = asyncHandler(async (req, res) => {
   const user = await User.aggregate([
     {
       $match: {
-        _id: new mongoose.Types.ObjectId(req.user._id),
+        _id: new mongoose.Types.ObjectId(req.user?._conditions?._id),
       },
     },
     {
@@ -406,6 +406,10 @@ const getWatchHistory = asyncHandler(async (req, res) => {
       },
     },
   ]);
+
+  if (user) {
+    new ApiResponse(202, "User found maaain");
+  }
   return res
     .status(200)
     .json(
