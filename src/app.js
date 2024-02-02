@@ -19,8 +19,10 @@ app.use(cookieParser());
 //import Routes
 import userRouter from "./routes/user.routes.js";
 import tweetsRouter from "./routes/tweets.routes.js";
+import subscriptionRouter from "./routes/subscription.routes.js";
 
 app.use("/users", userRouter);
 app.use("/tweets", tweetsRouter);
+app.use("/subscription", subscriptionRouter);
 
 export default app;
