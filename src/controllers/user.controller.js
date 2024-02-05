@@ -1,7 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
-import { uploadOnClodinary } from "../utils/cloudinary.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
@@ -49,8 +49,8 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   //uploading Avatar & Coverimage to cloudinary.
-  const avatar = await uploadOnClodinary(avatarLocalPath);
-  const coverImage = await uploadOnClodinary(coverImageLocalPath);
+  const avatar = await uploadOnCloudinary(avatarLocalPath);
+  const coverImage = await uploadOnCloudinary(coverImageLocalPath);
 
   if (!avatar) {
     throw new ApiError(400, "Avatar is requiredd");
@@ -229,7 +229,7 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 
 const updateAccountDetails = asyncHandler(async (req, res) => {
   const { fullName, email } = req.body;
-  console.log(fullName);
+
   if (!fullName || !email) {
     throw new ApiError(400, "All Fields are requiredd");
   }
@@ -254,11 +254,11 @@ const avatarUpdate = asyncHandler(async (req, res) => {
   if (!localAvatar) {
     throw new ApiError(400, "Avatar file is missing");
   }
-  const avatar = await uploadOnClodinary(localAvatar);
+  const avatar = await uploadOnCloudinary(localAvatar);
   if (!avatar.url) {
     throw new ApiError(400, "Errorwhile Uploading Avatar");
   }
-  const user = User.findByIdAndUpdate(
+  const user = await User.findByIdAndUpdate(
     req.user?._conditions?._id,
     {
       $set: { avatar: avatar.url },
